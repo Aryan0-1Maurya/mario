@@ -4,7 +4,7 @@ Welcome to Document Game, where you embark on an adventure in the world of virtu
 
 ## Play the Game
 
-[Play Now](https://aryan0-1maurya.github.io/document-game/) 🕹️
+[Play Now](https://aryan0-1maurya.github.io/document/) 🕹️
 
 ## About the Game
 
