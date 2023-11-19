@@ -1,0 +1,1825 @@
+<!-- 
+
+      ************************************************************
+
+           ++++++++++++++    --------    +++++++++++++++++
+
+{   By ~Aryan Maurya Mr.perfect https://amsrportfolio.netlify.app  }
+
+           ++++++++++++++    --------    +++++++++++++++++
+
+      ************************************************************
+ -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=7" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta name="author" content="Aryan Maurya" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="favicon.png" />
+    <!-- <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
+    <meta
+      name="description"
+      content="This is online  game build for your imporove thing skill in this domain by aryan maurya enjoy your game"
+    />
+    <meta
+      name="keywords"
+      content="poly-jump games,poly jump,polyjumps games,poly games,animated polyjumps secior ,best rpsc game,world best animated games,rock ,paper,secior ,online games,play games, t rex dinoonline , games player , online t rex dinogame,online games hub, fun free, online , dino, human, computer, other game,color poly green shok,online dino game by aryan , aryan sir, aryan sir game"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="overlay">
+      <div id="msg-container"></div>
+    </div>
+    <script>
+      const $ = (element) => document.querySelector(element);
+      $("body").oncontextmenu = () => false;
+      function removeMsg() {
+        $("#msg-container").classList.remove("active");
+        $("#overlay").classList.remove("active");
+      }
+      function msg(title = "", text = "", btn1, btn2) {
+        return new Promise((resolve) => {
+          $("#overlay").classList.add("active");
+          //btn1
+          const cont1 = document.createElement("div");
+          cont1.classList.add("btn");
+          cont1.classList.add("btn-red");
+          cont1.id = "deny";
+          cont1.innerHTML = !btn1
+            ? ""
+            : `
+                <div class="text-btn ">${btn1.text}</div>  `;
+
+          const cont2 = document.createElement("div");
+          cont2.classList.add("btn");
+          cont2.classList.add("btn-blue");
+          cont2.id = "deny";
+          cont2.innerHTML = !btn2
+            ? ""
+            : `
+                <div class="text-btn ">${btn2.text}</div>`;
+
+          $("#msg-container").innerHTML = `
+        <div id="title">${title}</div>
+        <div id="msg">${text}</div>
+        <div id="btns">    
+        </div>   `;
+
+          if (btn1.text) $("#btns").appendChild(cont1);
+          if (btn2.text) $("#btns").appendChild(cont2);
+
+          $("#msg-container").classList.add("active");
+          cont1.onclick = () => {
+            resolve(btn1);
+            btn1.callback();
+            removeMsg();
+          };
+          cont2.onclick = () => {
+            resolve(btn1);
+            btn1.callback();
+            removeMsg();
+          };
+        });
+      }
+
+      //////////////////////////
+      const createElement = (element) => document.createElement(element);
+      class CanvasButton {
+        constructor(canvas) {
+          this.buttons = new Map();
+          this.canvas = canvas;
+          this.context = canvas.getContext("2d");
+        }
+        add(id, styles, img) {
+          const buffer = this.createBuffer(styles, img);
+          const values = {
+            buffer: buffer,
+            style: {
+              display: styles.display,
+              width: styles.width,
+              height: styles.height,
+              x: styles.x,
+              y: styles.y,
+            },
+          };
+          this.buttons.set(id, values);
+        }
+        get(id) {
+          return this.buttons.get(id);
+        }
+        createBuffer(styles, img) {
+          const buffer = createElement("canvas");
+          const ctx = buffer.getContext("2d");
+          buffer.width = styles.width;
+          buffer.height = styles.height;
+          ctx.drawImage(img, img.width, img.height);
+          //dibujar en el boton
+          return buffer;
+        }
+        draw() {
+          for (let button of this.buttons) {
+            const style = button[1].style;
+            if (style.display) {
+              this.context.drawImage(button[1].buffer, style.x, style.y);
+            }
+          }
+        }
+
+        listenerTo(id, callBack, callBack2) {
+          const current = this.buttons.get(id).style;
+          const button = {
+            width: current.width,
+            height: current.height,
+            x: current.x,
+            y: current.y,
+          };
+          this.canvas.addEventListener("touchstart", (e) => {
+            for (let i = 0; i < e.touches.length; i++) {
+              const x = e.touches[i].clientX;
+              const y = e.touches[i].clientY;
+              if (x < button.x + button.width && x > button.x) {
+                if (y < button.y + button.height && y > button.y) {
+                  callBack();
+                }
+              }
+            }
+          });
+          this.canvas.addEventListener("touchend", (e) => {
+            for (let i = 0; i < e.changedTouches.length; i++) {
+              const x = e.changedTouches[i].clientX;
+              const y = e.changedTouches[i].clientY;
+              if (x < button.x + button.width && x > button.x) {
+                if (y < button.y + button.height && y > button.y) {
+                  callBack2();
+                }
+              }
+            }
+          });
+        }
+      }
+      function createButtons() {
+        buttons = new CanvasButton(cv_btns);
+        buttons.add(
+          "left",
+          {
+            display: true,
+            width: 64,
+            height: 64,
+            x: 0,
+            y: window.innerHeight - 100,
+            backroundColor: "#f00",
+          },
+          image.left.img
+        );
+        buttons.listenerTo(
+          "left",
+          () => {
+            player.dir = -1;
+            player.lastDir = -1;
+          },
+          () => (player.dir = 0)
+        );
+
+        buttons.add(
+          "right",
+          {
+            display: true,
+            width: 64,
+            height: 64,
+            x: 110,
+            y: window.innerHeight - 100,
+            backroundColor: "#f00",
+          },
+          image.right.img
+        );
+        buttons.listenerTo(
+          "right",
+          () => {
+            player.dir = 1;
+            player.lastDir = 1;
+          },
+          () => (player.dir = 0)
+        );
+
+        buttons.add(
+          "jump",
+          {
+            display: true,
+            width: 64,
+            height: 64,
+            x: window.innerWidth - 100,
+            y: window.innerHeight - 64,
+            backroundColor: "#f00",
+          },
+          image.btn2.img
+        );
+        buttons.listenerTo(
+          "jump",
+          () => {
+            if (player.canJump) {
+              player.canJump = false;
+              player.velocity.y = -55;
+            }
+          },
+          () => (player.velocity.y = player.velocity.y / 2)
+        );
+
+        buttons.add(
+          "shot",
+          {
+            display: true,
+            width: 64,
+            height: 64,
+            x: window.innerWidth - 100,
+            y: window.innerHeight - 160,
+            backroundColor: "#f00",
+          },
+          image.btn_shoot.img
+        );
+        buttons.listenerTo(
+          "shot",
+          () => {
+            player.shoot();
+          },
+          () => 0
+        );
+
+        buttons.draw();
+      }
+      ///////////////////////////
+      class Keyboard {
+        constructor() {
+          this.pressed = 1;
+          this.relased = 0;
+          this.keyStates = new Map();
+          this.keyMap = new Map();
+        }
+        addEvent(keyCode, callback) {
+          this.keyMap.set(keyCode, callback);
+        }
+        handleEvent(event) {
+          const { keyCode } = event;
+          if (!this.keyMap.has(keyCode)) return;
+          event.preventDefault();
+          const keyState =
+            event.type == "keydown" ? this.pressed : this.relased;
+
+          if (this.keyStates.get(keyCode) == keyState) return;
+          this.keyStates.set(keyCode, keyState);
+          this.keyMap.get(keyCode)(keyState);
+        }
+        listenTo(window) {
+          ["keydown", "keyup"].forEach((eventName) => {
+            window.addEventListener(eventName, (event) => {
+              this.handleEvent(event);
+            });
+          });
+        }
+      }
+      function inputs() {
+        const input = new Keyboard();
+        input.addEvent(37, (state) => {
+          player.dir = state == 1 ? -1 : 0;
+          player.lastDir = -1;
+        });
+        input.addEvent(39, (state) => {
+          player.dir = state == 1 ? 1 : 0;
+          player.lastDir = 1;
+        });
+        input.addEvent(38, (state) => {
+          if (player.canJump) {
+            player.canJump = false;
+            if (state) player.velocity.y = -55;
+          }
+          if (state == 0) player.velocity.y = player.velocity.y / 2;
+        });
+        input.addEvent(80, (status) => {
+          player.velocity.x = status ? 30 : 20;
+        });
+        //shot
+        input.addEvent(79, (status) => {
+          if (status) player.shoot();
+        });
+        input.listenTo(window);
+      }
+      ////////////////////////////////////////
+      let static_blocks = {
+        block1: {
+          size: [32, 32],
+          rangesX: [
+            //xi,xf,y
+            [0, 70, 15],
+          ],
+        },
+        block2: {
+          size: [32, 32],
+          rangesX: [
+            //xi,xf,y
+            [10, 23, 10],
+            [25, 28, 13],
+            [25, 28, 14],
+            [62, 64, 10],
+          ],
+          rangesY: [[6, 16, 70]],
+          default: [[31, 12]],
+        },
+        block3: {
+          size: [32, 32],
+          rangesX: [
+            //xi,xf,y
+          ],
+        },
+        block4: {
+          size: [96, 96],
+          default: [
+            //x,y
+            [65, 13],
+          ],
+        },
+        block5: {
+          size: [16, 16],
+          default: [[9, 14.5]],
+        },
+        tubo_left: {
+          size: [50, 50],
+          default: [[24, 14]],
+        },
+        void: {
+          size: [32, 32],
+          rangesX: [
+            //castle
+            [53.55, 56.55, 4],
+            [52, 58, 6],
+            [50, 60, 9],
+          ],
+          default: [
+            //block-4
+            [66, 13],
+            [66, 14],
+            [67, 13],
+            [67, 14],
+          ],
+        },
+      };
+      let interactive_block = {
+        drop_block: {
+          size: [32, 32],
+          default: [[26, 10]],
+        },
+        spr_brick_strip4: {
+          size: [32, 32],
+          rangesX: [
+            [34, 37, 11],
+            [39, 42, 11],
+          ],
+        },
+      };
+      let bg3d = {
+        bg_2_3: {
+          name: "bg_2_3",
+          size: [1150, innerHeight + 50],
+          x: [0.2, 0],
+          y: [0.4, 0],
+        },
+        bg8: {
+          name: "bg8",
+          size: [192 + innerHeight * 0.3, innerHeight + 10],
+          x: [0.3, 400],
+          y: [0.4, 100],
+        },
+        "bg3-2": {
+          name: "bg3",
+          size: [192 + innerHeight * 0.3, innerHeight - 100],
+          x: [0.5, 800],
+          y: [0.3, 200],
+        },
+        "bg8-2": {
+          name: "bg8",
+          size: [192 + innerHeight * 0.3, innerHeight + 10],
+          x: [0.3, 1200],
+          y: [0.4, 100],
+        },
+      };
+      ////////////////////////////////////////
+      function createCanvas(element) {
+        const canvas = document.createElement("canvas");
+        with (canvas.style) {
+          position = "absolute";
+          top = 0;
+          left = 0;
+        }
+        canvas.width = innerWidth;
+        canvas.height = innerHeight;
+
+        element.appendChild(canvas);
+
+        return canvas;
+      }
+      const sleep = (millis) =>
+        new Promise((resolve) => setTimeout(resolve, millis));
+      /////////////////////////////////////////
+      const config = {
+          block_size: 32,
+        },
+        gravity = 12,
+        npc_size = {
+          goomba: {
+            x: 32,
+            y: 32,
+            y2: 32,
+          },
+          redTurtle: {
+            x: 32,
+            y: 32,
+            y2: 54,
+          },
+        };
+      ///////////////////////////////////////
+      let dt = 0,
+        ms = 0,
+        time = 0,
+        seconds = 0;
+
+      class Animation {
+        constructor(scenes) {
+          this.update = scenes.update;
+          this.lastTime;
+          this.request;
+          this.min = 10;
+          this.loop = (ms) => {
+            dt = (ms - this.lastTime) / 100;
+            if (this.lastTime && 1000 / (dt * 100) > this.min) this.update(dt);
+            this.lastTime = ms;
+            this.request = requestAnimationFrame(this.loop);
+          };
+          this.running = false;
+        }
+        stop() {
+          this.running = false;
+          cancelAnimationFrame(this.request);
+        }
+        start() {
+          if (this.running == false) {
+            this.request = requestAnimationFrame(this.loop);
+            this.running = true;
+          }
+        }
+      }
+      ////////////////////////////////////////////////////
+      class SpriteSheet {
+        constructor(img) {
+          this.img = img;
+          this.sprites = new Map();
+          this.width = this.img.width;
+          this.height = this.img.height;
+          this.frame = [];
+          this.length = 0;
+          this.names = [];
+        }
+        define(name, x, y, width, height) {
+          const buffer = document.createElement("canvas");
+          buffer.width = width == undefined ? this.width : width;
+          buffer.height = height == undefined ? this.height : height;
+          const context = buffer.getContext("2d");
+          context.drawImage(
+            this.img,
+            x * buffer.width,
+            y * buffer.height,
+            this.width,
+            this.height,
+            0,
+            0,
+            this.width,
+            this.height
+          );
+          this.sprites.set(name, buffer);
+          this.frame.push(buffer);
+          this.names.push(name);
+        }
+        toSprite(json) {
+          let values = [];
+          for (let i = 0; i < json.length; i++) {
+            values = [];
+            for (let j = 0; j < json[i].length; j++) {
+              values.push(json[i][j]);
+            }
+            this.define(...values);
+            this.length++;
+          }
+          return { frame: this.frame };
+        }
+      }
+      class ImageLoader {
+        constructor(json) {
+          this.json = json;
+          this.urls = [];
+          this.names = [];
+          this.length = 0;
+          for (let i in json) {
+            this.urls.push(json[i]);
+            this.names.push(i);
+            this.length++;
+          }
+          this.buffer = new Map();
+          this.loaded = 0;
+        }
+        async loadImage(url) {
+          return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+              resolve(img);
+            };
+            img.src = server + url;
+          });
+        }
+        async syncLoad() {
+          const loads = [];
+          for (let i = 0; i < this.length; i++) {
+            const url = this.urls[i];
+            loads.push(this.loadImage(url));
+          }
+          const loaded = await Promise.all(loads);
+          for (let i in loaded) {
+            const sprite = new SpriteSheet(loaded[i]);
+            this.__proto__[this.names[i]] = sprite;
+          }
+        }
+      }
+      ///////////////////////////////////////////
+      class Vector {
+        constructor(x, y) {
+          this.x = x;
+          this.y = y;
+        }
+      }
+      class Subject {
+        constructor(x, y, width, height) {
+          this.x = x;
+          this.y = y;
+          this.width = width;
+          this.height = height;
+          this.dir = 0;
+          this.distance = 0;
+          this.frame = 0;
+          this.matrix = [null, null, null, null, null, null, null, null, null];
+        }
+        updateMatrix() {
+          const x = Math.round(this.x / config.block_size);
+          const y = Math.round(this.y / config.block_size);
+
+          this.matrix[0] = [x - 1, y - 1];
+          this.matrix[1] = [x, y - 1];
+          this.matrix[2] = [x + 1, y - 1];
+
+          this.matrix[3] = [x - 1, y];
+          this.matrix[4] = [x, y];
+          this.matrix[5] = [x + 1, y];
+
+          this.matrix[6] = [x - 1, y + 1];
+          this.matrix[7] = [x, y + 1];
+          this.matrix[8] = [x + 1, y + 1];
+
+          /* for(let i=0;i< this.matrix.length;i++){  
+             if(this.matrix[i]==null) continue;
+                 space.context.strokeStyle="blue"
+                 space.context.beginPath()
+                 space.context.rect(this.matrix[i][0]*32,this.matrix[i][1]*32,32,32)
+                 space.context.stroke()
+         }*/
+        }
+        animate(dt, frames) {
+          this.distance += Math.abs(this.dir) * this.velocity.x * dt;
+          this.frame =
+            this.velocity.y != 0
+              ? 2
+              : Math.round((this.distance / 30) % frames);
+        }
+        get top() {
+          return this.y;
+        }
+        get left() {
+          return this.x;
+        }
+        get right() {
+          return this.x + this.width;
+        }
+        get bottom() {
+          return this.y + this.height;
+        }
+
+        set top(value) {
+          this.y = value;
+        }
+        set left(value) {
+          this.x = value;
+        }
+        set right(value) {
+          this.x = value - this.width;
+        }
+        set bottom(value) {
+          this.y = value - this.height;
+        }
+      }
+      class Timer {
+        constructor(timeout, handleEvent) {
+          this.handleEvent = handleEvent;
+          this.timeout = timeout;
+          this.counter = 0;
+          this.waiting = false;
+        }
+        update(dt) {
+          this.counter += dt * 100;
+          if (!this.waiting) {
+            if (this.counter >= this.timeout) {
+              this.counter = 0;
+              this.handleEvent();
+            }
+          }
+        }
+      }
+      class Block extends Subject {
+        constructor(name, x, y, w, h) {
+          super(x, y, w, h);
+          this.name = name;
+          this.type;
+        }
+      }
+      class Compositor {
+        constructor(width, height) {
+          this.width = width;
+          this.height = height;
+          this.layers = new Set();
+          this.renders = new Set();
+        }
+        addLayer(layer) {
+          this.layers.add(layer);
+          this.renders.add(layer.render);
+          layer = null;
+        }
+
+        draw() {
+          this.renders.forEach((render) => {
+            context.drawImage(render, -camera.x, -camera.y);
+          });
+          space.context.clearRect(
+            camera.x,
+            camera.y,
+            camera.width,
+            camera.height
+          );
+        }
+      }
+      class Camera {
+        constructor(
+          x = 0,
+          y = 0,
+          screenX,
+          screenY,
+          width = window.innerWidth,
+          height = window.innerHeight
+        ) {
+          this.size = new Vector(width, height);
+          this.position = new Vector(x, y);
+          this.screenX = screenX;
+          this.screenY = screenY;
+        }
+        follow(target) {
+          //bg
+          for (let img in bg3d) {
+            const bg = bg3d[img];
+            let w = -this.x * bg.x[0] + bg.x[1],
+              h = -this.y * bg.y[0] + bg.y[1];
+            if (h < image[bg.name].img.height + -this.y * bg.y[0]) {
+              h = 0;
+            }
+            bg_ctx.drawImage(image[bg.name].img, w, h, bg.size[0], bg.size[1]);
+          }
+
+          //player
+          if (target.x > this.width / 2) {
+            if (target.x > 0) {
+              this.x = -(-target.x + this.width / 2);
+            }
+          } else {
+            if (target.x < 0) target.x = 0;
+          }
+          if (target.y > this.height / 2) {
+            if (target.y > 0) {
+              this.y = -(-target.y + this.height / 2);
+            }
+          }
+          if (this.y + innerHeight > world_height) {
+            this.y = world_height - innerHeight;
+          }
+        }
+
+        get x() {
+          return this.position.x;
+        }
+        get y() {
+          return this.position.y;
+        }
+        get width() {
+          return this.size.x;
+        }
+        get height() {
+          return this.size.y;
+        }
+
+        set x(x) {
+          this.position.x = x;
+        }
+        set y(y) {
+          this.position.y = y;
+        }
+      }
+      function createLayer(width, height) {
+        const buffer = document.createElement("canvas");
+        buffer.width = width;
+        buffer.height = height;
+
+        return { render: buffer, context: buffer.getContext("2d") };
+      }
+
+      const random = (max, min, fix = 0) =>
+        Number((Math.random() * (max - min) + min).toFixed(fix));
+
+      function createBlock(json) {
+        return new Promise((resolve) => {
+          const array = [];
+          for (let name in json) {
+            if (json[name].rangesX) {
+              // x
+              for (let j = 0; j < json[name].rangesX.length; j++) {
+                for (
+                  let i = json[name].rangesX[j][0];
+                  i < json[name].rangesX[j][1];
+                  i++
+                ) {
+                  array.push(
+                    new Block(
+                      name,
+                      i * config.block_size,
+                      config.block_size * json[name].rangesX[j][2],
+                      json[name].size[0],
+                      json[name].size[1]
+                    )
+                  );
+                }
+              }
+            }
+            if (json[name].rangesY) {
+              //y
+              for (let j = 0; j < json[name].rangesY.length; j++) {
+                for (
+                  let i = json[name].rangesY[j][0];
+                  i < json[name].rangesY[j][1];
+                  i++
+                ) {
+                  array.push(
+                    new Block(
+                      name,
+                      json[name].rangesY[j][2] * config.block_size,
+                      i * config.block_size,
+                      json[name].size[0],
+                      json[name].size[1]
+                    )
+                  );
+                }
+              }
+            }
+            if (json[name].default) {
+              //default
+              for (let i = 0; i < json[name].default.length; i++) {
+                array.push(
+                  new Block(
+                    name,
+                    json[name].default[i][0] * config.block_size,
+                    json[name].default[i][1] * config.block_size,
+                    json[name].size[0],
+                    json[name].size[1]
+                  )
+                );
+              }
+            }
+          }
+          resolve(array);
+        });
+      }
+      function overlap(a, b) {
+        return (
+          a.bottom > b.top &&
+          a.top < b.bottom &&
+          a.right > b.left &&
+          a.left < b.right
+        );
+      }
+      function intersection(subject, obstacles, func) {
+        obstacles
+          .filter((obstacle) => overlap(subject, obstacle))
+          .forEach(func);
+      }
+      function aabb2(subject, x, y, arr = map) {
+        let side = { x: null, y: null };
+        let subjectCollide = undefined;
+
+        let was = false;
+
+        subject.x += x;
+        if (x > 0) {
+          this.intersection(subject, arr, (rect) => {
+            if (subject.right > rect.left) {
+              was = true;
+              side.x = "right";
+            }
+          });
+        } else if (x < 0) {
+          this.intersection(subject, arr, (rect) => {
+            if (subject.left < rect.right) {
+              was = true;
+              side.x = "left";
+            }
+          });
+        }
+        subject.y += y;
+        if (y > 0) {
+          this.intersection(subject, arr, (rect) => {
+            if (subject.bottom > rect.top) {
+              was = true;
+              side.y = "bottom";
+            }
+          });
+        } else if (y < 0) {
+          this.intersection(subject, arr, (rect) => {
+            if (subject.top < rect.bottom) {
+              was = true;
+              side.y = "top";
+            }
+          });
+        }
+        return { side, subjectCollide, was };
+      }
+      function aabb(subject, x, y) {
+        let side = { x: null, y: null };
+        let subjectCollide = undefined;
+        subject.x += x;
+        let was = false;
+        let arr = [];
+        subject.matrix.forEach((pos) => {
+          if (pos[1] < matrix.files && pos[1] > 0) {
+            const block = matrix.value(pos[1], pos[0]).get;
+            if (block != null) {
+              arr.push(block);
+            }
+          } else {
+            const block = matrix.value(matrix.files - 1, pos[0]).get;
+            if (block != null) {
+              arr.push(block);
+            }
+          }
+        });
+
+        if (x > 0) {
+          this.intersection(subject, arr, (rect) => {
+            if (subject.right > rect.left) {
+              was = true;
+              subject.right = rect.left;
+              subjectCollide = rect;
+              side.x = "right";
+            }
+          });
+        } else if (x < 0) {
+          this.intersection(subject, arr, (rect) => {
+            if (subject.left < rect.right) {
+              was = true;
+              subject.left = rect.right;
+              subjectCollide = rect;
+              side.x = "left";
+            }
+          });
+        }
+        subject.y += y;
+        if (y > 0) {
+          this.intersection(subject, arr, (rect) => {
+            if (subject.bottom > rect.top) {
+              was = true;
+              subject.bottom = rect.top;
+              side.y = "bottom";
+              subjectCollide = rect;
+              subject.velocity.y = 0;
+
+              if (subject.has_jump) {
+                subject.status = subject.running
+                  ? "run"
+                  : subject.status == "idle"
+                  ? "idle"
+                  : "walk";
+                subject.has_jump = false;
+              }
+            }
+          });
+        } else if (y < 0) {
+          this.intersection(subject, arr, (rect) => {
+            if (subject.top < rect.bottom) {
+              was = true;
+              subject.top = rect.bottom;
+              subject.velocity.y = -subject.velocity.y / 4;
+              subjectCollide = rect;
+              side.y = "top";
+              audio.play("hit");
+            }
+          });
+        }
+        return { side, subjectCollide, was };
+      }
+      function danceBha() {
+        for (let npc of npcs) {
+          if (npc.name == "goomba" || npc.name == "redTurtle") {
+            npc.velocity.y = -20;
+          }
+        }
+      }
+      class AudioLoader {
+        constructor(json) {
+          this.json = json;
+          this.urls = [];
+          this.names = [];
+          this.length = 0;
+          for (let i in json) {
+            this.urls.push(json[i]);
+            this.names.push(i);
+            this.length++;
+          }
+          this.buffer = new Map();
+          this.loaded = 0;
+        }
+        async play(name, atTime = 0) {
+          try {
+            this[name].currentTime = atTime;
+            await this[name].play();
+          } catch (e) {
+            console.log(e);
+          }
+        }
+        async loadAudio(url) {
+          return new Promise((resolve) => {
+            const audio = new Audio();
+            audio.oncanplay = () => {
+              resolve(audio);
+            };
+            audio.src =
+              "https://firebasestorage.googleapis.com/v0/b/music-player-158f9.appspot.com/o/mario%2F" +
+              url;
+          });
+        }
+        async load() {
+          for (let i = 0; i < this.length; i++) {
+            const url = this.urls[i];
+            const name = this.names[i];
+            const audio = await this.loadAudio(url);
+            this.buffer.set(name, audio);
+            this.loaded = i + 1;
+            this.__proto__[name] = audio;
+          }
+        }
+      }
+      class Player extends Subject {
+        constructor(x, y) {
+          super(x, y, 32, 32);
+          this.velocity = new Vector(15, 15);
+          this.name = "mario";
+          this.status = "small";
+          this.small = players[this.name].small.frame;
+          this.big = npc.goomba.frame;
+          this.canJump = true;
+          this.buffer = document.createElement("canvas");
+          this.buffer_ctx = this.buffer.getContext("2d");
+          this.lastDir = 0;
+          this.items = {
+            coin: 0,
+            bullets: 17,
+          };
+          this.lifes = 2;
+        }
+        shoot() {
+          if (this.items.bullets == 0) return;
+          bullets.push(new Bullet(this.left, this.top));
+          this.items.bullets--;
+        }
+        async update(dt) {
+          this.buffer = document.createElement("canvas");
+          this.buffer_ctx = this.buffer.getContext("2d");
+          if (this.lastDir < 0) {
+            this.buffer_ctx.scale(-1, 1);
+            this.buffer_ctx.translate(-this.width, 0);
+          }
+          Promise.all([
+            this.buffer_ctx.drawImage(this[this.status][this.frame], 0, 0),
+            this.updateMatrix(),
+            this.animate(dt, 1),
+          ]);
+          this.velocity.y += dt * gravity;
+          if (this.velocity.y > 100) this.velocity.y = 100;
+          const x = this.velocity.x * this.dir * dt;
+          const y = this.velocity.y * dt;
+
+          //collisions
+          let coll = aabb(this, x, y);
+          if (coll.side.y == "bottom") {
+            if (coll.subjectCollide.type == "enemy") {
+              //  coll.subjectCollide.func();
+            }
+            this.canJump = true;
+            this.velocity.y = 0;
+          } else if (coll.side.y == "top") {
+            if (coll.subjectCollide.name == "drop_block") {
+              for (let i = 0; i < map.length; i++) {
+                if (
+                  map[i].x == coll.subjectCollide.x &&
+                  map[i].y == coll.subjectCollide.y
+                ) {
+                  coll.subjectCollide.y -= 5;
+                  await sleep(50);
+                  coll.subjectCollide.y -= 5;
+                  await sleep(50);
+                  coll.subjectCollide.y -= 5;
+                  await sleep(50);
+                  coll.subjectCollide.y += 5;
+                  await sleep(50);
+                  coll.subjectCollide.y += 5;
+                  await sleep(50);
+                  coll.subjectCollide.y += 5;
+                  await sleep(50);
+                  for (let j = 0; j < blocks.length; i++) {
+                    if (map[i].x == blocks[j].x && map[i].y == blocks[j].y) {
+                      blocks.splice(j, 1);
+                      break;
+                    }
+                  }
+                  map.splice(i, 1);
+                  const nb = new Block(
+                    "void",
+                    coll.subjectCollide.x,
+                    coll.subjectCollide.y,
+                    32,
+                    32
+                  );
+                  map.push(nb);
+                  matrix
+                    .value(
+                      Math.round(coll.subjectCollide.y / config.block_size),
+                      Math.round(coll.subjectCollide.x / config.block_size)
+                    )
+                    .set(nb);
+                  const npc = new NPC(
+                    "goomba",
+                    coll.subjectCollide.x,
+                    coll.subjectCollide.y - 64
+                  );
+                  npc.velocity.y = -20;
+                  npc.dir = -1;
+                  npc.lastDir = -1;
+                  npcs.push(npc);
+                  bg.context.drawImage(
+                    image.drop_block_void.frame[0],
+                    coll.subjectCollide.x,
+                    coll.subjectCollide.y,
+                    32,
+                    32
+                  );
+                  break;
+                }
+              }
+            }
+          }
+          if (this.dir == 0 && this.velocity.y == 0) this.frame = 0;
+
+          space.context.drawImage(this.buffer, this.x, this.y);
+
+          //drawcoins
+          context.drawImage(
+            image.coin.frame[frame_x4],
+            innerWidth - 60,
+            10,
+            20,
+            20
+          );
+          if (this.items.coin < 10) {
+            context.fillText(`x${"0" + this.items.coin}`, innerWidth - 40, 25);
+          } else {
+            context.fillText(`x${this.items.coin}`, innerWidth - 40, 25);
+          }
+
+          //drawtime
+          context.drawImage(image.bullet.img, innerWidth - 57, 32, 15, 15);
+          if (this.items.bullets < 10) {
+            context.fillText(
+              `x${"0" + this.items.bullets}`,
+              innerWidth - 40,
+              45
+            );
+          } else {
+            context.fillText(`x${this.items.bullets}`, innerWidth - 40, 45);
+          }
+        }
+      }
+      class NPC extends Subject {
+        constructor(name, x, y) {
+          super(x, y, npc_size[name].x, npc_size[name].y);
+          this.dir = 1;
+          this.velocity = new Vector(8, 10);
+          this.sprite = npc[name].frame;
+          this.name = name;
+
+          this.buffer = document.createElement("canvas");
+          this.buffer.width = this.width;
+          this.buffer.height = this.height;
+          this.type = "enemy";
+
+          this.lastDir = 0;
+          this.func = async () => {
+            player.velocity.y = -50;
+            this.y = 600;
+          };
+        }
+        update(dt) {
+          this.buffer = document.createElement("canvas");
+          this.buffer_ctx = this.buffer.getContext("2d");
+          if (this.lastDir < 0) {
+            this.buffer_ctx.scale(-1, 1);
+            this.buffer_ctx.translate(-this.width, 0);
+          }
+          Promise.all([
+            this.updateMatrix(),
+            this.buffer_ctx.drawImage(
+              this.sprite[this.frame],
+              0,
+              0,
+              this.width,
+              npc_size[this.name].y2
+            ),
+            this.animate(dt, 1),
+            space.context.drawImage(
+              this.buffer,
+              this.x,
+              this.y - (npc_size[this.name].y2 - 32)
+            ),
+          ]);
+
+          this.velocity.y += dt * gravity;
+
+          const x = this.velocity.x * this.dir * dt;
+          const y = this.velocity.y * dt;
+
+          const coll = aabb(this, x, y);
+
+          if (coll.side.x == "right" || coll.side.x == "left") {
+            this.dir = -this.dir;
+            this.lastDir = this.dir;
+          }
+        }
+      }
+      class Item extends Subject {
+        constructor(x, y, w, h) {
+          super(x, y, w, h);
+          this.amount = 0;
+          this.type = null;
+        }
+        onCollision() {
+          player.items[this.type] += this.amount;
+        }
+      }
+      class Coin extends Item {
+        constructor(x, y) {
+          super(x, y, 16, 16);
+          this.type = "coin";
+          this.amount = 1;
+          this.sprite = image.coin.frame;
+        }
+        draw() {
+          space.context.drawImage(
+            this.sprite[frame_x4],
+            this.x,
+            this.y,
+            16,
+            16
+          );
+        }
+      }
+      class Matrix {
+        constructor(sizeFile, sizeColumn) {
+          this.width;
+          this.height;
+          this.buffer;
+          this.context;
+          this.sizeFile = sizeFile;
+          this.sizeColumn = sizeColumn;
+          this.matrix = [];
+          this.files = 0;
+          this.columns = 0;
+        }
+        connectToLayer(layer) {
+          this.buffer = layer.render;
+          this.context = layer.context;
+
+          this.width = this.buffer.width;
+          this.height = this.buffer.height;
+        }
+        create(addFile = 0, addColumn = 0) {
+          for (let i = 0; i < this.height / this.sizeFile + addFile; i++) {
+            this.files++;
+          }
+          for (let i = 0; i < this.width / this.sizeColumn + addColumn; i++) {
+            this.columns++;
+          }
+          for (let file = 0; file < this.files; file++) {
+            this.matrix.push([]);
+            for (let column = 0; column < this.columns; column++) {
+              this.matrix[file].push(null);
+            }
+          }
+        }
+        printGrid() {
+          this.context.beginPath();
+          this.context.lineWidth = 1;
+          this.context.strokeStyle = "#f00";
+          this.context.fillStyle = "#f00";
+          this.context.font = "15px sans-serif";
+          for (let file = 0; file < this.files; file++) {
+            this.context.fillText(file - 1, 10, file * this.sizeFile);
+            this.context.moveTo(0, file * this.sizeFile);
+            this.context.lineTo(this.width, file * this.sizeFile);
+          }
+          for (let column = 0; column < this.columns; column++) {
+            this.context.fillText(column, column * this.sizeColumn, 10);
+            this.context.moveTo(column * this.sizeColumn, 0);
+            this.context.lineTo(column * this.sizeColumn, this.height);
+          }
+          this.context.stroke();
+        }
+        value(file, column) {
+          return {
+            set: (value) => (this.matrix[file][column] = value),
+            get: this.matrix[file][column],
+          };
+        }
+      }
+
+      const bullets = [],
+        bulletCollEffects = [];
+
+      class Bullet extends Subject {
+        constructor(x, y) {
+          super(x, y, 10, 10);
+          this.img = image.bullet.img;
+          this.velocity = new Vector(
+            50 * player.lastDir + player.velocity.x * player.dir,
+            0.5
+          );
+          this.originalDir = player.lastDir;
+          this.g = 0;
+          this.status = "kill";
+        }
+        update() {
+          this.velocity.y += this.g * dt;
+          const x = this.velocity.x * dt;
+          const y = this.velocity.y * dt;
+          this.updateMatrix();
+
+          const coll = aabb(this, x, y);
+          if (coll.side.x == "left" || coll.side.x == "right") {
+            this.velocity.x = -this.velocity.x / 5;
+            this.g = 12;
+            bulletCollEffects.push(new BulletCollEffect(this.x, this.y));
+            audio.play("hit");
+          }
+          if (coll.side.y == "bottom") {
+            this.velocity.x = 0;
+            this.awaitDestroy();
+          }
+          space.context.drawImage(this.img, this.x, this.y, 10, 10);
+        }
+        async awaitDestroy() {
+          await sleep(100);
+          for (let i in bullets) {
+            if (bullets[i] == this) {
+              this.status = "drag";
+              return;
+            }
+          }
+        }
+      }
+      class BulletCollEffect {
+        constructor(x, y) {
+          this.x = x;
+          this.y = y;
+          this.sprites = image.effectCollision.frame;
+          this.frame = 0;
+        }
+        update() {
+          space.context.drawImage(
+            this.sprites[this.frame],
+            this.x,
+            this.y,
+            32,
+            32
+          );
+        }
+      }
+
+      class Loader {
+        constructor(canvas) {
+          this.canvas = canvas;
+          this.context = this.canvas.getContext("2d");
+          this.deg = 0;
+          this.degEnd = 5;
+          this.lastTime;
+          this.dots = "";
+          this.colors = [
+            "#56ff5c",
+            "#f76cff",
+            "#7e91ff",
+            "#21e8f3",
+            "#ffeb3b",
+            "#f97a52",
+          ];
+          this.colorCont = 0;
+          this.animationR;
+          this.dotsInterval;
+          this.textLoad = "loading";
+          this.centerText = "Loading";
+          this.strokeColor = "#fff";
+          this.animation = (ms) => {
+            this.context.clearRect(0, 0, canvas.width, canvas.height);
+            this.draw();
+            if (this.lastTime) this.update((ms - this.lastTime) / 100);
+            this.lastTime = ms;
+            this.animationR = requestAnimationFrame(this.animation);
+          };
+          this.addDots = () => {
+            if (this.dots.length >= 5) {
+              this.dots = ".";
+              this.colorCont >= this.colors.length - 1
+                ? (this.colorCont = 0)
+                : this.colorCont++;
+            } else {
+              this.dots += ".";
+            }
+          };
+        }
+        update(dt) {
+          this.deg += 0.5 * dt;
+          this.degEnd += 0.5 * dt;
+        }
+        draw() {
+          this.context.save();
+          this.context.textAlign = "center";
+          this.context.strokeStyle = this.strokeColor;
+          this.context.lineWidth = 10;
+          this.context.beginPath();
+          this.context.arc(
+            canvas.width / 2,
+            canvas.height / 2,
+            50,
+            this.degEnd,
+            this.deg
+          );
+          this.context.stroke();
+
+          this.context.beginPath();
+          this.context.arc(
+            canvas.width / 2,
+            canvas.height / 2,
+            50,
+            3 + this.degEnd,
+            3 + this.deg
+          );
+          this.context.stroke();
+          this.context.fillStyle = "#9e9e9e";
+          this.context.font = "20px sans-serif";
+          this.context.fillText(
+            this.centerText,
+            canvas.width / 2,
+            canvas.height / 2
+          );
+
+          this.context.font = "30px sans-serif";
+          this.context.fillStyle = this.colors[this.colorCont];
+          this.context.fillText(
+            this.dots,
+            canvas.width / 2,
+            canvas.height / 2 + 20
+          );
+
+          this.context.fillStyle = "#fff";
+          this.context.font = "20px monospace";
+          this.context.textAlign = "left";
+          this.context.fillText(this.textLoad, 0, window.innerHeight);
+          this.context.restore();
+        }
+        start() {
+          this.animationR = requestAnimationFrame(this.animation);
+          this.dotsInterval = setInterval(this.addDots, 500);
+        }
+        stop() {
+          cancelAnimationFrame(this.animationR);
+          clearInterval(this.dotsInterval);
+        }
+      }
+      /////////////////////////////////
+      let canvas = null,
+        context = null,
+        map = null,
+        world_width = 5028,
+        world_height = 508,
+        blocks = null,
+        frame_x4 = 0,
+        npcs = [],
+        nieve = [],
+        setminfps = null,
+        server = "https://i.imgur.com/";
+
+      function checkCoins() {
+        return new Promise((resolve) => {
+          for (let i = 0; i < coins.length; i++) {
+            const coin = coins[i];
+            coin.draw();
+            if (overlap(player, coin)) {
+              coin.onCollision();
+              coins.splice(i, 1);
+              audio.play("coin");
+            }
+          }
+          resolve();
+        });
+      }
+      function updateNpc(dt) {
+        return new Promise((resolve) => {
+          for (let i = 0; i < npcs.length; i++) {
+            const npc = npcs[i];
+            npc.update(dt);
+          }
+          resolve();
+        });
+      }
+      function drawBlocks() {
+        return new Promise((resolve) => {
+          blocks.forEach((block) => {
+            space.context.drawImage(
+              image[block.name].frame[frame_x4],
+              block.x,
+              block.y,
+              block.with,
+              block.height
+            );
+          });
+          resolve();
+        });
+      }
+      function updateBullets() {
+        for (let i in bullets) {
+          const bullet = bullets[i];
+          bullet.update();
+          if (bullet.status == "kill") {
+            for (let ie in npcs) {
+              const enemy = npcs[ie];
+              if (
+                enemy.bottom > bullet.top &&
+                enemy.top - npc_size[enemy.name].y2 < bullet.bottom &&
+                enemy.right > bullet.left &&
+                enemy.left < bullet.right
+              ) {
+                npcs.splice(ie, 1);
+                bulletCollEffects.push(
+                  new BulletCollEffect(bullet.x, bullet.y)
+                );
+                bullets.splice(i, 1);
+                audio.play("hit2");
+              }
+            }
+          } else {
+            if (overlap(player, bullet)) {
+              player.items.bullets++;
+              bullets.splice(i, 1);
+            }
+          }
+        }
+      }
+      const bha = [
+        2.4, 6.5, 7, 11.4, 11.9, 35.2, 35.7, 59, 59.5, 63.4, 63.9, 64.4, 68.2,
+        68.7, 69.2,
+      ];
+
+      let matrix = null;
+      async function main() {
+        console = {};
+        console.log = function () {
+          return 0;
+        };
+        setminfps = prompt(
+          "set minus fps: min 15, max 60\nanimation run better while fps is minus than 30fps"
+        );
+        if (setminfps < 15) {
+          setminfps = 15;
+        } else if (setminfps > 60) setminfps = 60;
+
+        await msg(
+          "<span class=btn-red>Read Before ‼</span>",
+          "All this code was create by aryan maurya, if you like this all games then plz make 1 start of my repos-on -github .<br> It's not a complete game " +
+            "<hr><strong style='font-family:sans-serif'>Copyright © 2023 Aryan Maury.All rights reserved.</strong>",
+          { text: "", callback: () => {} },
+          { text: "continue", callback: () => console.log("close") }
+        );
+        bg_c = createCanvas($("body"));
+        bg_ctx = bg_c.getContext("2d");
+
+        canvas = createCanvas($("body"));
+        context = canvas.getContext("2d");
+        canvas.style.background = "#000";
+        loader = new Loader(canvas);
+        loader.start();
+        loader.centerText = "0%";
+        loader.textLoad = "loading graphics";
+        //buttons
+        cv_btns = createCanvas($("body"));
+
+        //load images
+        image = new ImageLoader({
+          block1: "N4Ek6o8.png",
+          block2: "SJNrAba.gif",
+          bg_2_3: "LKTgQLj.gif",
+          scene1: "7cYHpUk.png",
+          block4: "ycPrDFU.gif",
+          block5: "PNl9PF8.png",
+          drop_block: "3vS6uEM.png",
+          drop_block_void: "3vS6uEM.png",
+          coin: "Zazsc6f.png",
+          tubo_left: "NFlbzor.png",
+          bg8: "0sb4NiS.png",
+          bg3: "lsnpAfm.png",
+          castle1: "NNk31Bg.png",
+          void: "waz2Pvr.png",
+          spr_brick_strip4: "mSExbQC.png",
+          left: "Rf6JP71.png",
+          right: "yU3YiT7.png",
+          btn2: "5JRHrnn.png",
+          btn_shoot: "b3tUj7t.png",
+          copoNieve1: "QcGR0LD.png",
+          bullet: "O1sOFD2.png",
+          effectCollision: "3MxIsXK.png",
+        });
+        //load Audio
+        audio = new AudioLoader({
+          level_1:
+            "Overworld%20Theme%20-%20New%20Super%20Mario%20Bros.mp3?alt=media&token=f23b1815-785d-4e41-817e-3ba14b467e6c",
+          coin: "coin.mp3?alt=media&token=c3126e2f-bfb3-499b-840e-8ad07863bf22",
+          hit: "hit.mp3?alt=media&token=778aa692-48e0-442b-b7e8-0ec67c772dfa",
+          hit2: "golpe1.mp3?alt=media&token=a89c8551-842b-4456-a292-52628d78c553",
+        });
+
+        players = {
+          mario: new ImageLoader({
+            small: "u9fmgTk.png",
+          }),
+        };
+        npc = new ImageLoader({
+          goomba: "5V3zUAx.png",
+          redTurtle: "obFsjRH.png",
+        });
+
+        await npc.syncLoad();
+        loader.centerText = "10%";
+        await players.mario.syncLoad();
+        loader.centerText = "20%";
+        await image.syncLoad();
+        loader.centerText = "60%";
+        loader.textLoad = "loading audio...";
+        await audio.load();
+        loader.centerText = "90%";
+        loader.textLoad = "creating world";
+        audio.level_1.volume = 0.6;
+        //define spites
+        //player
+        players.mario.small.toSprite([
+          ["idle", 0, 0, 32, 32],
+          ["run_1", 1, 0, 32, 32],
+          ["jump", 2, 0, 32, 32],
+        ]);
+
+        //npcs
+        npc.goomba.toSprite([
+          [1, 0, 0, 16, 16],
+          [2, 0, 1, 16, 16],
+          [3, 0, 0, 16, 16],
+        ]);
+        npc.redTurtle.toSprite([
+          [1, 0, 0, 32, 54],
+          [2, 1, 0, 32, 54],
+          [3, 0, 0, 32, 54],
+        ]);
+
+        //blocks
+        image.drop_block.toSprite([
+          [1, 1, 0, 16, 16],
+          [2, 2, 0, 16, 16],
+          [3, 3, 0, 16, 16],
+          [4, 4, 0, 16, 16],
+        ]);
+        image.drop_block_void.toSprite([[1, 0, 0, 16, 16]]);
+        image.coin.toSprite([
+          [1, 0, 0, 16, 16],
+          [2, 1, 0, 16, 16],
+          [3, 2, 0, 16, 16],
+          [4, 3, 0, 16, 16],
+        ]);
+        image.spr_brick_strip4.toSprite([
+          [1, 0, 0, 16, 16],
+          [2, 1, 0, 16, 16],
+          [3, 2, 0, 16, 16],
+          [4, 3, 0, 16, 16],
+        ]);
+
+        //efects
+        image.effectCollision.toSprite([
+          [1, 0, 0, 48, 48],
+          [2, 0, 1, 48, 48],
+          [3, 0, 2, 48, 48],
+        ]);
+
+        //render static world
+        bg = createLayer(world_width, world_height);
+        space = createLayer(world_width, world_height);
+
+        //map
+        map = await createBlock(static_blocks);
+        blocks = await createBlock(interactive_block);
+
+        compositor = compositor = new Compositor(world_width, world_height);
+        camera = new Camera(0, 0, 0, 0, innerWidth, innerHeight);
+
+        compositor.addLayer(bg);
+        compositor.addLayer(space);
+
+        animation = new Animation({
+          update: () => {
+            if (audio.level_1.currentTime > bha[0]) {
+              danceBha();
+              bha.shift();
+            }
+            Promise.all([
+              context.clearRect(0, 0, innerWidth, innerHeight),
+              player.update(dt),
+              camera.follow(player),
+              checkCoins(),
+              updateNpc(dt),
+              compositor.draw(),
+              drawBlocks(),
+              timer_4x.update(dt),
+              gmb_spawn.update(dt),
+              updateBullets(),
+              bulletCollEffects.forEach((effect) => effect.update()),
+            ]);
+
+            context.fillText(
+              `${(1000 / (dt * 100)).toFixed(0)}fps,min:${setminfps}`,
+              10,
+              20
+            );
+          },
+        });
+
+        bg.context.drawImage(image.castle1.img, 1600, 128);
+        bg.context.drawImage(image.scene1.img, 228, world_height - 60);
+
+        //bg.context.drawImage(image.palmera.img, 1024, 256, 96, 226)
+        map.forEach((block) => {
+          bg.context.drawImage(image[block.name].img, block.x, block.y);
+        });
+
+        //player
+        player = new Player(100, 400);
+        player.lastDir = 1;
+
+        //times
+        timer_4x = new Timer(130, () => {
+          frame_x4++;
+          for (let i in bulletCollEffects) {
+            const effect = bulletCollEffects[i];
+            effect.frame++;
+            if (effect.frame >= 2) bulletCollEffects.splice(i, 1);
+          }
+          if (frame_x4 >= 4) {
+            frame_x4 = 0;
+          }
+        });
+
+        //init
+        context.font = "20px sans-serif";
+        context.fillStyle = "#fff";
+
+        n = new NPC("redTurtle", 630, 100, 32, 32);
+        n.dir = -1;
+        n.lastDir = -1;
+        npcs.push(n);
+        npcs.push(new NPC("goomba", 512, 150, 32, 32));
+
+        coins = [];
+        for (let i = 0; i < 15; i++) {
+          coins.push(new Coin(320 + i * 32 + 16 * 0.5, 300));
+        }
+
+        inputs();
+
+        blocks.forEach((block) => {
+          if (block.name == "coin") {
+            block.with = block.height = 16;
+          } else {
+            block.with = block.height = 32;
+          }
+        });
+        map.push(...blocks);
+
+        gmb_spawn = new Timer(5000, () => {
+          if (npcs.length <= 5) {
+            npcs.push(
+              new NPC(
+                random(1, 0) == 1 ? "goomba" : "redTurtle",
+                23 * 32,
+                14 * 32
+              )
+            );
+          }
+        });
+
+        //matrix
+        matrix = new Matrix(config.block_size, config.block_size);
+        matrix.connectToLayer(bg);
+        matrix.create();
+        //matrix.printGrid()
+        map.forEach((block) => {
+          matrix
+            .value(
+              Math.round(block.y / config.block_size),
+              Math.round(block.x / config.block_size)
+            )
+            .set(block);
+        });
+        loader.centerText = "100%";
+        loader.textLoad = "Ready";
+        loader.strokeColor = "#1cdf1c";
+        await sleep(1000);
+        loader.stop();
+        await msg(
+          "Thank you for waiting",
+          "<ul><li>button '1'  for shoot (mobile)</li><li>button 'o' for shoot (pc)</li><li>button 'p' for run (pc)</li><li>upvote the code</li></ul>",
+          { text: "start", callback: () => removeMsg() },
+          { text: "", callback: () => {} }
+        );
+        canvas.style.background = "none";
+        createButtons();
+
+        animation.min = setminfps;
+        audio.level_1.play();
+        audio.level_1.onended = () => {
+          audio.currentTime = 0;
+          audio.level_1.play();
+        };
+        animation.start();
+      }
+      window.onload = () => {
+        btn_start = document.createElement("button");
+        btn_start.innerHTML = "start";
+        btn_start.onclick = () => {
+          $("body").removeChild(btn_start);
+          main();
+        };
+        $("body").appendChild(btn_start);
+      };
+    </script>
+  </body>
+</html>
+
+<!-- 
+
+      ************************************************************
+
+           ++++++++++++++    --------    +++++++++++++++++
+
+{   By ~Aryan Maurya Mr.perfect https://amsrportfolio.netlify.app  }
+
+           ++++++++++++++    --------    +++++++++++++++++
+
+      ************************************************************
+ -->
